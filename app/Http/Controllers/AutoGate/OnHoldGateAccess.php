@@ -197,12 +197,12 @@ class OnHoldGateAccess extends Controller
         /**
          * Check if $pass can already be used
          */
-        // if (Carbon::now() <= $pass->usable_at) {
-        //     return response()->json([
-        //         'status' => 'VALID_NOT_YET_ALLOWED',
-        //         'status_message' => 'Your code is valid but not yet allowed to be used.',
-        //     ], 400);
-        // }
+        if (Carbon::now() <= $pass->usable_at) {
+            return response()->json([
+                'status' => 'VALID_NOT_YET_ALLOWED',
+                'status_message' => 'Your code is valid but not yet allowed to be used.',
+            ], 400);
+        }
 
         /**
          * Check if $pass is expired

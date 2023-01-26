@@ -432,44 +432,44 @@ class GateAccess extends Controller
         /**
          * Check if $pass can already be used
          */
-        // if (Carbon::now() <= $pass->usable_at) {
+        if (Carbon::now() <= $pass->usable_at) {
 
-        //     $tap = Tap::create([
-        //         'code' => $request->code,
-        //         'tap_datetime' => Carbon::now(),
-        //         'status' => 'valid_not_yet_started',
-        //         'message' => '',
-        //         'location' => $request->interface,
-        //         'kiosk_id' => $request->kiosk_id,
-        //         'type' => $request->mode, // entry, exit, consume
-        //     ]);
+            $tap = Tap::create([
+                'code' => $request->code,
+                'tap_datetime' => Carbon::now(),
+                'status' => 'valid_not_yet_started',
+                'message' => '',
+                'location' => $request->interface,
+                'kiosk_id' => $request->kiosk_id,
+                'type' => $request->mode, // entry, exit, consume
+            ]);
 
-        //     // Update kiosk display
-        //     ScanEvent::dispatch(
-        //         '/invalid-code',
-        //         'Your code is valid but not yet allowed to be used.',
-        //         [
-        //             'status' => 'VALID_NOT_YET_ALLOWED',
-        //             'users' => '',
-        //             'details' => [
-        //                 'code' => $request->code,
-        //                 'tap_id' => $tap->id,
-        //             ],
-        //         ]
-        //     );
+            // Update kiosk display
+            ScanEvent::dispatch(
+                '/invalid-code',
+                'Your code is valid but not yet allowed to be used.',
+                [
+                    'status' => 'VALID_NOT_YET_ALLOWED',
+                    'users' => '',
+                    'details' => [
+                        'code' => $request->code,
+                        'tap_id' => $tap->id,
+                    ],
+                ]
+            );
 
-        //     $scanLogService->write_log([
-        //         $request->code,
-        //         'VALID_NOT_YET_ALLOWED',
-        //         'Your code is valid but not yet allowed to be used.',
-        //         Carbon::now()
-        //     ]);
+            $scanLogService->write_log([
+                $request->code,
+                'VALID_NOT_YET_ALLOWED',
+                'Your code is valid but not yet allowed to be used.',
+                Carbon::now()
+            ]);
 
-        //     return response()->json([
-        //         'status' => 'VALID_NOT_YET_ALLOWED',
-        //         'status_message' => 'Your code is valid but not yet allowed to be used.',
-        //     ], 400);
-        // }
+            return response()->json([
+                'status' => 'VALID_NOT_YET_ALLOWED',
+                'status_message' => 'Your code is valid but not yet allowed to be used.',
+            ], 400);
+        }
 
         /**
          * Check if $pass is expired
