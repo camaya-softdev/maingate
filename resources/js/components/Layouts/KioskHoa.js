@@ -26,6 +26,10 @@ const KioskHoa = ({ children }) => {
 
   // redirect on page change
   useEffect(() => {
+    if(page === '' || page === '/'){
+      console.log('trial');
+      return;
+    }
     if (page) {
       history.push(page);
     }
@@ -43,6 +47,8 @@ const KioskHoa = ({ children }) => {
       history.push("/");
     } else if (!isEmpty(scanDataHoa) && history.location.pathname !== page) {
       history.push(page);
+    }else{
+      return;
     }
   }, [page, scanDataHoa, history]);
 
@@ -52,6 +58,7 @@ const KioskHoa = ({ children }) => {
       history.push("/");
     }
   }, [page, scanMessage, history]);
+
   const dataLogo =
     scanDataHoa.users.autogate.template.hoa_autogate_template_picture;
   const dataBackgroud = scanDataHoa.users

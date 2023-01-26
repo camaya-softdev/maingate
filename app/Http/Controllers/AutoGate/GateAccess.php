@@ -59,7 +59,7 @@ class GateAccess extends Controller
     ) {
         // get data in cache
         $kiosk_data = Cache::get('kiosk_data');
-
+        // check if there's another request
         if ($check_kiosk_data) {
             if ($kiosk_data) {
                 $scanLogService->write_log([
@@ -175,6 +175,7 @@ class GateAccess extends Controller
                     // 'booking' => Booking::with(['guests', 'guest_vehicles', 'inclusions', 'customer', 'tags'])->first(),
                     'balance' => 1000,
                     'users' => $user,
+                    'layout' => '',
                     'billing' => $billing,
                     // 'pass' => Pass::where('mode', $request->mode)->whereRaw('json_contains(interfaces, \'["main_gate"]\')')->first(),
                 ]);
@@ -222,6 +223,7 @@ class GateAccess extends Controller
                     'balance' => 1000,
                     'billing' => $billingDefault,
                     'users' => $userDefault,
+                    'layout' => '',
                     // 'pass' => Pass::where('mode', $request->mode)->whereRaw('json_contains(interfaces, \'["main_gate"]\')')->first(),
                 ]);
 
@@ -248,6 +250,7 @@ class GateAccess extends Controller
                 [
                     'status' => 'CODE_INVALID',
                     'users' => '',
+                    'layout' => '',
                     'details' => [
                         'code' => $request->code,
                         'tap_id' => $tap->id, //tap history
@@ -316,6 +319,7 @@ class GateAccess extends Controller
                 [
                     'status' => 'CODE_INVALID',
                     'users' => '',
+                    'layout' => '',
                     'details' => [
                         'code' => $request->code,
                         'tap_id' => $tap->id,
@@ -358,6 +362,7 @@ class GateAccess extends Controller
                 [
                     'status' => 'CODE_VALID_WITH_ERROR',
                     'users' => '',
+                    'layout' => '',
                     'details' => [
                         'code' => $request->code,
                         'tap_id' => $tap->id,
@@ -403,6 +408,7 @@ class GateAccess extends Controller
                 [
                     'status' => 'CODE_CONSUMED',
                     'users' => '',
+                    'layout' => '',
                     'details' => [
                         'code' => $request->code,
                         'tap_id' => $tap->id,
@@ -426,7 +432,7 @@ class GateAccess extends Controller
         /**
          * Check if $pass can already be used
          */
-        // if (Carbon::now() >= $pass->usable_at) {
+        // if (Carbon::now() <= $pass->usable_at) {
 
         //     $tap = Tap::create([
         //         'code' => $request->code,
@@ -775,11 +781,12 @@ class GateAccess extends Controller
         ScanEvent::dispatch('/welcome', '', [
             'status' => 'OK',
             'users' => '',
+            'layout' => '',
             'booking' => $booking_kiosk,
             'balance' => Invoice::where('booking_reference_number', $pass['booking_reference_number'])->sum('balance'),
             'details' => $details,
             'pass' => $pass,
-            'tap_id' => $tap->id,
+            // 'tap_id' => $tap->id,
             'previous_security_check_data' => $previous_security_check_data
         ]);
 

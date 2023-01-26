@@ -44,6 +44,7 @@
         "pusher-js": "^7.0.3",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
+        "react-qr-reader": "^3.0.0-beta-1",
         "react-query": "^3.16.0",
         "react-quill": "^2.0.0",
         "react-router-dom": "^5.2.0",

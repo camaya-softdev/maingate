@@ -96,7 +96,7 @@ const Security = ({ children }) => {
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item key="/system-version" disabled>
-              System Version: v0.6
+              System Version:v2
             </Menu.Item>
           </Menu>
         </div>

@@ -13,6 +13,7 @@ use App\Models\Invoice;
 use App\Models\SecurityCheck;
 use App\Models\Transaction;
 use App\Services\CloudService;
+use App\Services\Security;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +25,12 @@ class SecurityCheckController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    protected $security;
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
     public function index()
     {
         return SecurityCheck::whereNotIn('status', ['validated', 'invalid-code', 'voided'])->get()->map(function ($item, $key) {
@@ -49,12 +56,7 @@ class SecurityCheckController extends Controller
         $securityCheck = SecurityCheck::create($request->validated());
 
         if ($securityCheck->status === 'on-hold') {
-            Transaction::create(
-                [
-                    'security_check' => $securityCheck,
-                    'guests_status' => 'on-hold',
-                ]
-            );
+            $this->security->onhold($securityCheck);
 
             if ($page) {
                 ScanEvent::dispatch($page);
@@ -69,50 +71,8 @@ class SecurityCheckController extends Controller
                 ScanEvent::dispatch($page);
                 Cache::forget('kiosk_data');
             }
-
             // update checked guests status
-            $checklists = $request->checklists;
-
-            $guests_status = [];
-            $status = 'arriving';
-            collect($checklists['guests'])->map(function ($checked, $guestID) use ($cloudService, &$guests_status, $status) {
-
-                if ($checked) {
-                    $guestUpdate = Guest::findOrFail($guestID);
-                    if ($guestUpdate->status === 'checked_in') {
-                        GuestUpdate::updateOrCreate(
-                            ['id' => $guestID],
-                            ['status' => 'checked-in']
-                        );
-                        $status = 'checked-in';
-                        OfflineValidation::dispatch($cloudService, $guestID, $status);
-                        $guests_status[$guestID] = $status;
-                    }
-                    if ($guestUpdate->status === 'arriving' || $guestUpdate->status === 'on_premise') {
-                        GuestUpdate::updateOrCreate(
-                            ['id' => $guestID],
-                            ['status' => 'on_premise']
-                        );
-                        // dd($guests_status[$guestID]);
-                        $status = 'on_premise';
-                        OfflineValidation::dispatch($cloudService, $guestID, $status);
-                        // $cloudService->update_guest_status($guestID, 'on_premise');
-
-                        $guests_status[$guestID] = $status;
-                    }
-                } else {
-                    $guests_status[$guestID] = 'arriving';
-                }
-
-                return $checked;
-            });
-
-            Transaction::create(
-                [
-                    'security_check' => $securityCheck,
-                    'guests_status' => $guests_status,
-                ]
-            );
+            $this->security->ensure($request, $cloudService, $securityCheck);
 
             return [
                 // 'success' => (new SecurityCheck)->fill($request->validated())->save(),
@@ -120,6 +80,38 @@ class SecurityCheckController extends Controller
             ];
         }
 
+        //for tablet and mobile phone qrcode scanner onhold
+        if ($page = 'scanner-holding-area') {
+            $this->security->onhold($securityCheck);
+
+            if ($page) {
+
+                Cache::forget('kiosk_data');
+                return;
+            }
+            return [
+                // 'success' => (new SecurityCheck)->fill($request->validated())->save(),
+                'success' => true,
+            ];
+        }
+
+
+        //for tablet and mobile phone qrcode scanner valid
+        if ($page = 'scanner-valid-code') { {
+                if ($page) {
+
+                    Cache::forget('kiosk_data');
+                    return;
+                }
+                // update checked guests status
+                $this->security->ensure($request, $cloudService, $securityCheck);
+
+                return [
+                    // 'success' => (new SecurityCheck)->fill($request->validated())->save(),
+                    'success' => true,
+                ];
+            }
+        }
         return [
             'success' => false
         ];

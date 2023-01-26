@@ -12,6 +12,7 @@ const Loading = () => {
 
   const onFinish = (values) => {
     setVerifySuccess(false);
+
     verifyReferenceCodeAPI.mutate(values);
   };
 

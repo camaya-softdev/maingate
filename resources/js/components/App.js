@@ -17,6 +17,7 @@ import {
 import useKeyboardEvents from '../hooks/useKeyboardEvents';
 import useOnHoldCounter from '../hooks/useOnHoldCounter';
 
+
 const App = () => {
   const userToken = useAtomValue(userTokenAtom);
   const setKioskBarrierRedirectTimer = useUpdateAtom(kioskBarrierRedirectTimerAtom);

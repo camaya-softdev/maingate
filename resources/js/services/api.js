@@ -20,8 +20,19 @@ export const getLogout = (url = "/api/logout") => useMutation(() => get(url));
 export const scanValid = (url = "/api/security-checks/valid-code") =>
   useMutation(values => post(url, values));
 
+export const scannerValid = (url = "/api/security-checks/scanner-valid-code") =>
+  useMutation(values => post(url, values));
+
 export const scanHoldingArea = ({
   url = "/api/security-checks/holding-area",
+  queryClient = useQueryClient()
+} = {}) =>
+  useMutation(values => post(url, values), {
+    onSuccess: () => queryClient.invalidateQueries("on-hold-counter")
+  });
+
+export const scanerHoldingArea = ({
+  url = "/api/security-checks/scanner-holding-area",
   queryClient = useQueryClient()
 } = {}) =>
   useMutation(values => post(url, values), {
@@ -193,11 +204,18 @@ export const getHoaTransactions = ({
         lastPage.data.next_page_url ? lastPage.data.current_page + 1 : null
     }
   );
+
 export const verifyReferenceCode = ({
   url = "/api/on-hold/gate-access"
 } = {}) => useMutation(values => post(url, values));
+
 export const manualGateAccess = ({
   url = "/api/auto-gate/v1/gate-access"
 } = {}) => useMutation(values => post(url, values));
+
+export const scanGateAccess = ({
+  url = "/api/auto-gate/v1/scan-gate-access"
+} = {}) => useMutation(values => post(url, values));
+
 export const scanLog = ({ url = "/api/scan-log" } = {}) =>
   useMutation(values => post(url, values));

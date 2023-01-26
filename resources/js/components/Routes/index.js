@@ -22,6 +22,8 @@ import Transaction from '../Views/Security/Transaction';
 import TransactionHoa from "../Views/Security/TransactionHoa";
 import AdminSecurity from '../Views/Security/Admin';
 import Logout from './Logout';
+import ScannerSecurity from '../Views/Scanner';
+import Tablet from '../Layouts/Tablet';
 
 const routes = [
   {
@@ -41,6 +43,12 @@ const routes = [
     component: InvalidCode,
     layout: Kiosk,
     public: true,
+  },
+  {
+    path:'/scanner',
+    component:ScannerSecurity,
+    layout:Tablet,
+    public:false
   },
   {
     path: '/invalid-code-hoa',

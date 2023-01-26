@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AutoGate\GateAccess;
+use App\Http\Controllers\AutoGate\ScanGateAccess;
 use App\Http\Controllers\AutoGate\OnHoldGateAccess;
 use App\Http\Controllers\CustomChecklistController;
 use App\Http\Controllers\GuestController;
@@ -33,6 +34,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', LoginController::class)->name('login');
 Route::get('logout', LogoutController::class);
 Route::post('auto-gate/v1/gate-access', GateAccess::class);
+Route::post('auto-gate/v1/scan-gate-access', ScanGateAccess::class);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 

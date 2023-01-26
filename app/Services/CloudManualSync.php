@@ -58,20 +58,20 @@ class CloudManualSync
 
         $filter_for_inserts_updates = [
             'bookings' => [
-                'id' => Booking::cursor()->pluck('id'),
-                'updated_at' => Booking::cursor()->pluck('updated_at'),
+                'id' => Booking::cursor()->pluck('id')->chunk(100),
+                'updated_at' => Booking::cursor()->pluck('updated_at')->chunk(100),
             ],
             'booking_tags' => [
-                'id' => BookingTag::withTrashed()->cursor()->pluck('id'),
-                'updated_at' => BookingTag::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => BookingTag::withTrashed()->cursor()->pluck('id')->chunk(100),
+                'updated_at' => BookingTag::withTrashed()->cursor()->pluck('updated_at')->chunk(100),
             ],
             'customers' => [
-                'id' => Customer::withTrashed()->latest()->cursor()->pluck('id'),
-                'updated_at' => Customer::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => Customer::withTrashed()->latest()->cursor()->pluck('id')->chunk(100),
+                'updated_at' => Customer::withTrashed()->cursor()->pluck('updated_at')->chunk(100),
             ],
             'guests' => [
-                'id' => Guest::withTrashed()->cursor()->pluck('id'),
-                'updated_at' => Guest::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => Guest::withTrashed()->cursor()->pluck('id')->chunk(100),
+                'updated_at' => Guest::withTrashed()->cursor()->pluck('updated_at')->chunk(100),
                 'update_data' => GuestUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {
@@ -79,8 +79,8 @@ class CloudManualSync
                     }),
             ],
             'guest_vehicles' => [
-                'id' => GuestVehicle::withTrashed()->cursor()->pluck('id'),
-                'updated_at' => GuestVehicle::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => GuestVehicle::withTrashed()->cursor()->pluck('id')->chunk(100),
+                'updated_at' => GuestVehicle::withTrashed()->cursor()->pluck('updated_at')->chunk(100),
                 'update_data' => GuestVehicleUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {
@@ -93,16 +93,16 @@ class CloudManualSync
                     }),
             ],
             'inclusions' => [
-                'id' => Inclusion::withTrashed()->cursor()->pluck('id'),
-                'updated_at' => Inclusion::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => Inclusion::withTrashed()->cursor()->pluck('id')->chunk(100),
+                'updated_at' => Inclusion::withTrashed()->cursor()->pluck('updated_at')->chunk(100),
             ],
             'invoices' => [
-                'id' => Invoice::withTrashed()->cursor()->pluck('id'),
-                'updated_at' => Invoice::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => Invoice::withTrashed()->cursor()->pluck('id')->chunk(100),
+                'updated_at' => Invoice::withTrashed()->cursor()->pluck('updated_at')->chunk(100),
             ],
             'passes' => [
-                'id' => Pass::withTrashed()->latest()->cursor()->pluck('id'),
-                'updated_at' => Pass::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => Pass::withTrashed()->latest()->cursor()->pluck('id')->chunk(100),
+                'updated_at' => Pass::withTrashed()->cursor()->pluck('updated_at')->chunk(100),
                 'update_data' => PassUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {

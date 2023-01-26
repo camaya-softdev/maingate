@@ -1,5 +1,6 @@
 export { layoutAtom } from './layout';
 export { scanDataAtom } from './scanData';
+export { scanDataMobileAtom } from './scanDataMobile';
 export { scanDataHoaAtom } from './scanDataHoa';
 export { scanMessageAtom } from './scanMessage';
 export { kioskPageAtom } from './kioskPage';

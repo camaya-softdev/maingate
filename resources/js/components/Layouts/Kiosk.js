@@ -21,7 +21,12 @@ const Kiosk = ({ children }) => {
 
   // redirect on page change
   useEffect(() => {
+    if(page === '' || page === '/'){
+      console.log('trial');
+      return;
+    }
     if (page) {
+      console.log('not trial');
       history.push(page);
     }
   }, [page]);
@@ -32,7 +37,11 @@ const Kiosk = ({ children }) => {
       && isEmpty(scanData)) {
       history.push('/');
     } else if (!isEmpty(scanData) && history.location.pathname !== page) {
+      console.log('taema');
       history.push(page);
+    }else{
+      console.log(page);
+      return;
     }
   }, [page, scanData, history]);
 

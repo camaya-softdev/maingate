@@ -13,7 +13,9 @@ class ChangeDescriptionOfInclusionsTable extends Migration
      */
     public function up()
     {
-        //
+        Schema::table('inclusions', function (Blueprint $table) {
+            $table->longText('description')->change();
+        });
     }
 
     /**
@@ -23,6 +25,8 @@ class ChangeDescriptionOfInclusionsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->dropColumn('description');
+        });
     }
 }
