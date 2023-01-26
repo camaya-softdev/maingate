@@ -12,11 +12,12 @@ See composer.json for the list of packages used
 
 ## Configuration
 Configuration needed by the system to run properly
-- APP_NAME=Laravel  
+- APP_NAME="Auto Gate"  
 - APP_ENV=local #local, staging, production  
 - APP_DEBUG=false  
-- APP_URL=http://main-gate-local.test #without trailing slash  
+- APP_URL=https://dev.maingate.site.lan #without trailing slash  #just easily changed it if you deploy it on production
 - DB_CONNECTION=mysql  
+- APP_TIMEZONE=Asia/Manila
 - DB_HOST=127.0.0.1  
 - DB_PORT=3306  
 - DB_DATABASE=main-gate-local  
@@ -29,31 +30,30 @@ Configuration needed by the system to run properly
 - PUSHER_APP_HOST=main-gate-local.test  
 - SESSION_DOMAIN=.main-gate-local.test  
 - CLOUD_SYNC_URL=http://auto-gate-local.test  #without trailing slash  
-- CLOUD_SYNC_LOGIN_EMAIL=
-- CLOUD_SYNC_LOGIN_PASSWORD=
-- CLOUD_SYNC_PORTAL=
-- CLOUD_SYNC_LOGIN_TYPE=
-- CLOUD_SYNC_CRON_SCHEDULE=
+- CLOUD_SYNC_LOGIN_EMAIL= #login email of camaya services
+- CLOUD_SYNC_LOGIN_PASSWORD= #login password of camaya services
+- CLOUD_SYNC_PORTAL= #link of camaya services
+- CLOUD_SYNC_LOGIN_TYPE= #login type for camaya services
+- CLOUD_SYNC_CRON_SCHEDULE= #minutes o automatic sync
+- CLOUD_SYNC_HOA_URL= #link of hoa portal
+- CLOUD_SYNC__HOA_LOGIN_EMAIL= #login email of hoa portal
+- CLOUD_SYNC_HOA_LOGIN_PASSWORD= #login password of hoa portal
 - LOG_SCAN=true
 - MANUAL_SECRET_TOKEN=
 - MANUAL_KIOSK_ID=
 - MANUAL_INTERFACE=
 - MANUAL_MODE=
 - DELAYED_MINS_TO_VALIDATE_NEW_TAP=
+- MAIL_DRIVER=smtp
+- MAIL_HOST=smtp.gmail.com
+- MAIL_PORT=465
+- MAIL_USERNAME=autogatemaingate321@gmail.com
+- MAIL_PASSWORD=Camaya123
+- MAIL_ENCRYPTION=ssl
+- MAIL_FROM_NAME="${APP_NAME}"
 
-## Manually creating of user
-open terminal and change to the root directory of the system (e.g cd path/to/root/directory)  
-php artisan tinker  
-User::create(['name'=>'Juan Dela Cruz','email'=>'admin@camayacoast.com','password'=>Hash::make('secret')])  
-
-## Manually updating of user password
-open terminal and change to the root directory of the system (e.g cd path/to/root/directory)  
-php artisan tinker  
-User::where('email', 'admin@camayacoast.com')->update(['password'=>Hash::make('secret')])  
-
-## Checking user validity in tinker
-php artisan tinker
-Auth::attempt(['email' => 'admin@camayacoast.com', 'password' => 'secret'])
+## Creation of users.
+To get email and password be sure that you requested it on the Admistration of HOA PORTAL to get you logged in maingate system
 
 ## HTTP request between 2 local apps in laragon
 https://forum.laragon.org/topic/1468/why-you-should-use-nginx-instead-of-apache-for-laragon  
@@ -64,7 +64,7 @@ SetEnv DB_DATABASE xyz
 \</VirtualHost>  
 
 ## Cache
-System is configured to use database as cache driver for easier migration in the future. Some of the configuration of the system will use key-value storage (e.g store login token when connecting to NBE API)
+System is configured to use database as cache driver for easier migration in the future. Some of the configuration of the system will use key-value storage (e.g store login token when connecting to Camaya Services and HOA Portal API)
 
 ## Scheduler - To run the scheduler locally
 https://laravel.com/docs/8.x/scheduling#running-the-scheduler-locally
@@ -127,10 +127,11 @@ Run: php artisan config:cache
 ## Update configuration in .env file
 Run: php artisan config:cache  
 
-## Adding a new table in NBE (new booking engine) for syncing
-1. Create a new migration file (database table) that we need to sync from NBE 
-1. Migrate the new table (make sure table columns are the same with what is created in NBE)
-1. Modify the file app\Services\CloudService.php (add the table to be sync in $filter_for_inserts_updates variable in fetch_table_data function)
+## Adding a new table in Camaya Services for automatic and manual syncing
+1. Create a new migration file (database table) that we need to sync from Camaya Services 
+1. Migrate the new table (make sure table columns are the same with what is created in Camaya Services)
+1. Modify the file app\Services\CloudService.php for automatic sync and app\Services\CloudManualServices for manual sync (add the table to be sync in $filter_for_inserts_updates variable in fetch_table_data function)
+
       ``` php
       $filter_for_inserts_updates = [
             'bookings' => [
@@ -148,7 +149,7 @@ Run: php artisan config:cache
             // add table to be sync here
       ];
       ```
-1. Modify the file app\Services\CloudService.php (add the table to be sync in `DB::transaction(function () use ($response) {})` function in sync_table function)
+1. Modify the file app\Services\CloudService.php and app\Services\CloudManualServices (add the table to be sync in `DB::transaction(function () use ($response) {})` function in sync_table function)
       ``` php
       DB::transaction(function () use ($response) {
             $create_data = function ($key, $model) use ($response) {};
@@ -160,7 +161,40 @@ Run: php artisan config:cache
             // add table to be sync here
       })
       ```
-1. Modify the file in NBE (app\Http\Controllers\AutoGate\GateSync.php) (add the table to be sync in `return response()->json()` __invoke function)
+
+## Adding a new table in HOA Portal for syncing
+1. Create a new migration file (database table) that we need to sync from HOA Portal 
+1. Migrate the new table (make sure table columns are the same with what is created in HOA PORTAL)
+1. Modify the file app\Services\CloudHOAService.php for sync (add the table to be sync in $filter_for_inserts_updates variable in fetch_table_data function)
+
+      ``` php
+      $filter_for_inserts_updates = [
+             'autogates' => [
+                'id' => Autogate::max('id'),
+                'updated_at' => Autogate::max('updated_at'),
+            ],
+            'messages' => [
+                'id' => Message::max('id'),
+                'updated_at' => Message::max('updated_at'),
+            ],
+            // ....
+            // add table to be sync here
+      ];
+      ```
+
+1. Modify the file app\Services\CloudHOAService.php (add the table to be sync in `DB::transaction(function () use ($response) {})` function in sync_table function)
+      ``` php
+      DB::transaction(function () use ($response) {
+            $create_data = function ($key, $model) use ($response) {};
+            $update_data = function ($key, $model) use ($response) {};
+
+            $create_data('autogates', Autogate::class);
+            $create_data('cards', Card::class);
+            // ....
+            // add table to be sync here
+      })
+      ```
+1. Modify the file in CamayaServices (app\Http\Controllers\AutoGate\GateSync.php) (add the table to be sync in `return response()->json()` __invoke function)
       ``` php
       return response()->json([
             'success' => true,
@@ -185,7 +219,8 @@ Run: php artisan config:cache
       - In tinker assign new Cloudservice to variable. Run: $cs = new \App\Services\CloudService();
       - View the response from NBE by running:  $cs->sync_table();
       - Revert changes in app\Services\CloudService.php once done
-
+      - you can also use same test in app\Services\CloudManualService.php and app\Services\CloudHOAService.php
+    
 ## Sending test code via curl
 syntax
 ```
@@ -194,6 +229,7 @@ curl -d "enter data here" -X POST url
 example
 ```
 curl -d "secret_token=CAMAYA9999&kiosk_id=1&interface=main_gate&mode=access&timestamp=&code=\<code>" -X POST http://auto-gate-local.test/api/auto-gate/v1/gate-access
+
 ```
 
 ## Scan log
@@ -204,3 +240,9 @@ if enabled it will create a csv file with file name scan-log-\<date>.csv and soc
 2. Focus window on techsafe's application
 3. Paste the code in techsafe's application (ctrl+v)
 4. Press enter
+
+## testing of RFID Card of for HOA PORTAL
+1. Get an RFID.
+2. Encode it in HOA Portal System in RFID Registration under Admin Management.
+3. Click HOA Sync Table in Maingate system.
+4. Tap your RFID Card on RFID Scanner to see if it working.
