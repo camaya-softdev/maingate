@@ -786,7 +786,7 @@ class GateAccess extends Controller
             'balance' => Invoice::where('booking_reference_number', $pass['booking_reference_number'])->sum('balance'),
             'details' => $details,
             'pass' => $pass,
-            // 'tap_id' => $tap->id,
+            'tap_id' => $tap->id,
             'previous_security_check_data' => $previous_security_check_data
         ]);
 

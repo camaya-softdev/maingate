@@ -1,14 +1,16 @@
 import React from 'react';
 import { Row, Col, Typography, Button, Input, Form } from 'antd';
-import { scanHoldingArea } from '../../../services/api';
+import { scanerHoldingArea } from '../../../services/api';
 import { barrierAtom, scanDataMobileAtom } from '../../../atoms';
 import { useAtomValue, useUpdateAtom } from 'jotai/utils';
+import { useHistory } from "react-router-dom";
 
 const InvalidVerification = () => {
-  const scanHoldingAreaAPI = scanHoldingArea();
+  const scanHoldingAreaAPI = scanerHoldingArea();
   const [form] = Form.useForm();
   const scanDataMobile = useAtomValue(scanDataMobileAtom);
   const setBarrier = useUpdateAtom(barrierAtom);
+  const navigate = useHistory();
 
   const onFinish = (values) => {
     setBarrier(true);
@@ -27,8 +29,17 @@ const InvalidVerification = () => {
         tap_id: scanDataMobile.details.tap_id,
       }
     );
-  };
 
+  };
+  // useEffect(()=>{
+  //   if(scanHoldingAreaAPI.isSuccess){
+  //     return backToScanner();
+  //   }
+  // },[scanHoldingAreaAPI.isSuccess]);
+
+  function backToScanner(){
+    navigate.push('/scanner');
+  }
   return (
     <>
       <Row justify="space-around" align="middle" className="h-screen">
@@ -67,6 +78,15 @@ const InvalidVerification = () => {
                   </tbody>
                 </table>
 
+              </div>
+
+              <div className="text-center my-5">
+                <Button
+                  onClick={backToScanner}
+                  size="large"
+                  type="primary">
+                  Cancel
+                </Button>
               </div>
 
               <div className="text-center my-5">

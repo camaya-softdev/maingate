@@ -140,6 +140,10 @@ class OnHoldGateAccess extends Controller
             }
             return response()->json([
                 'status' => 'CODE_INVALID',
+                'details' => [
+                    'code' => $request->code,
+                    'tap_id' => $last_tap->id, //tap history
+                ],
                 'status_message' => 'RFID code not accepted. The code is not allowed to be used here or does not exist in our records.',
             ], 400);
         }
@@ -167,6 +171,10 @@ class OnHoldGateAccess extends Controller
         if (!$pass) {
             return response()->json([
                 'status' => 'CODE_INVALID',
+                'details' => [
+                    'code' => $request->code,
+                    'tap_id' => $last_tap->id, //tap history
+                ],
                 'status_message' => 'Code not accepted. The code is not allowed to be used here or does not exist in our records.',
             ], 400);
         }
@@ -257,6 +265,10 @@ class OnHoldGateAccess extends Controller
         if (!$details) {
             return response()->json([
                 'status' => 'CODE_INVALID',
+                'details' => [
+                    'code' => $request->code,
+                    'tap_id' => $last_tap->id, //tap history
+                ],
                 'status_message' => 'There\'s no record corresponding to QR Code.',
             ], 400);
         }

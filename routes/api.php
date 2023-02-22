@@ -42,6 +42,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('taps', TapController::class);
     Route::resource('custom-checklists', CustomChecklistController::class);
     Route::post('security-checks/{page?}', [SecurityCheckController::class, 'store']);
+
+    Route::post('security-checks/clear-cache', [SecurityCheckController::class, 'clearScreen']);
+
     Route::post('security-checks-hoa/{page?}', [SecurityCheckHoaController::class, 'store']);
     Route::get('/security-checks-hoa', [SecurityCheckHoaController::class, 'index']);
     Route::resource('security-checks', SecurityCheckController::class)->except(['store', 'destroy']);

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 axios.defaults.baseURL = process.env.APP_URL;
 
+console.log(process.env.APP_URL);
 axios.interceptors.request.use(function (config) {
   if (! /^\/api/.test(config.url)) {
     return config;

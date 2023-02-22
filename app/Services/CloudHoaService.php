@@ -21,7 +21,6 @@ class CloudHoaService
 {
     public function login()
     {
-
         $response = Http::post('https://apidevhoaportal.camayacoast.com/api/login/', [
             'email' => 'admin@camayacoast.com',
             'password' => 'secretCamaya',
@@ -33,6 +32,7 @@ class CloudHoaService
             Cache::put('cloudHOAToken', $decoded_response->token);
         } else {
             Log::error('Cloud sync error: ' . json_encode($decoded_response->error));
+
             return response()->json(['error' => 401, 'message' => $decoded_response->error], 401);
         }
 
@@ -85,13 +85,14 @@ class CloudHoaService
                 'updated_at' => Lot::max('updated_at')
             ]
         ];
-
+        // dd($filter_for_inserts_updates);
         $login_token = $this->login_token();
 
         $query_url = 'https://apidevhoaportal.camayacoast.com/api/autogate/hoa-gate-sync/';
         $response = Http::withToken($login_token)->post($query_url, [
             'filter_for_inserts_updates' => json_encode($filter_for_inserts_updates),
         ]);
+
         if ($response->ok()) {
             return $response->json();
         } else {
@@ -126,7 +127,6 @@ class CloudHoaService
                     return $item;
                 });
             };
-
             $create_data('autogates', Autogate::class);
             $create_data('cards', Card::class);
             $create_data('users', User::class);

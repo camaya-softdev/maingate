@@ -8,14 +8,17 @@ import InvalidVerification from "./InvalidVerification";
 import OpenBarrier from "./OpenBarrier";
 
 
+
 const Index = () =>{
   const scanDataMobile = useAtomValue(scanDataMobileAtom);
   const barrierData = useAtomValue(barrierAtom);
+
+  console.log(scanDataMobile.status);
   return(
     <>
       {barrierData && <OpenBarrier />}
 
-      {!barrierData && isEmpty(scanDataMobile) && <Scanner />}
+      {!barrierData && isEmpty(scanDataMobile) && <Scanner /> }
       {!barrierData && !isEmpty(scanDataMobile) && scanDataMobile.status === "OK" &&
         <ValidVerification />
       }

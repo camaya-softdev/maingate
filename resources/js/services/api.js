@@ -31,6 +31,9 @@ export const scanHoldingArea = ({
     onSuccess: () => queryClient.invalidateQueries("on-hold-counter")
   });
 
+export const clearScreen = (url = "/api/security-checks/clear-cache") =>
+  useMutation(() => get(url));
+
 export const scanerHoldingArea = ({
   url = "/api/security-checks/scanner-holding-area",
   queryClient = useQueryClient()
@@ -60,7 +63,7 @@ export const syncHoaTables = (url = "/hoa-sync-table") =>
   useMutation(() => get(url));
 export const getGuests = ({
   date,
-  url = `/api/guests?date=${dayjs(date).format('YYYY-MM-DD')}`,
+  url = `/api/guests?date=${dayjs(date).format("YYYY-MM-DD")}`,
   params,
   name = ["guest", "todays"]
 } = {}) =>
@@ -134,10 +137,9 @@ export const putSecurityChecks = ({
   });
 export const getSecurityDashboard = ({
   date,
-  url = `/api/security-dashboard?date=${dayjs(date).format('YYYY-MM-DD')}`,
+  url = `/api/security-dashboard?date=${dayjs(date).format("YYYY-MM-DD")}`,
   name = "security-dashboard"
 } = {}) =>
-
   useQuery(name, () => get(`${url}`), {
     refetchInterval: 1000 * 30,
     refetchOnWindowFocus: false

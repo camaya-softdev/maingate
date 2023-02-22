@@ -45,8 +45,6 @@ class Security
             } else {
                 $guests_status[$guestID] = 'arriving';
             }
-
-            return $checked;
         });
 
         Transaction::create(
@@ -55,6 +53,8 @@ class Security
                 'guests_status' => $guests_status,
             ]
         );
+
+        return;
     }
 
     public function onhold($securityCheck)
@@ -65,5 +65,6 @@ class Security
                 'guests_status' => 'on-hold',
             ]
         );
+        return;
     }
 }

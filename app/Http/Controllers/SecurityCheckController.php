@@ -115,6 +115,13 @@ class SecurityCheckController extends Controller
         return [
             'success' => false
         ];
+
+        // Transaction::create(
+        //     [
+        //         'security_check' => $securityCheck,
+        //         'guests_status' => $guests_status,
+        //     ]
+        // );
     }
 
     /**
@@ -161,6 +168,15 @@ class SecurityCheckController extends Controller
 
         return [
             'success' => false
+        ];
+    }
+
+    public function clearScreen()
+    {
+        ScanEvent::dispatch("/guest");
+        Cache::forget('kiosk_data');
+        return [
+            'success' => true
         ];
     }
 }

@@ -192,7 +192,7 @@ class CloudService
             $create_data('invoices', Invoice::class);
             $create_data('passes', Pass::class);
             $update_data('pass_updates', PassUpdate::class);
-            // $update_data('taps', Tap::class);
+            $update_data('taps', Tap::class);
         });
 
         Cache::put('db_last_sync_date', Carbon::now());

@@ -7,6 +7,8 @@ import { Kiosk, Security,KioskHoa } from '../Layouts';
 
 // pages
 import Scan from '../Views/Kiosk/Scan';
+import InvalidVerification from '../Views/Scanner/InvalidVerification';
+import ManualInput from '../Views/Scanner/ManualInput';
 import Welcome from '../Views/Kiosk/Welcome';
 import WelcomeHoa from "../Views/KioskHoa/WelcomHoa";
 import InvalidCode from '../Views/Kiosk/InvalidCode';
@@ -47,6 +49,19 @@ const routes = [
   {
     path:'/scanner',
     component:ScannerSecurity,
+    layout:Tablet,
+    public:false
+  },
+
+  {
+    path:'/scanner-invalid-code',
+    component:InvalidVerification,
+    layout:Tablet,
+    public:false
+  },
+  {
+    path:'/scanner-manual-input',
+    component:ManualInput,
     layout:Tablet,
     public:false
   },

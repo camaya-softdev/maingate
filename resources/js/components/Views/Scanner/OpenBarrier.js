@@ -67,7 +67,7 @@ const OpenBarrier = () => {
     <div className="flex h-auto min-h-full w-full p-5">
       <div className="flex items-center bg-white w-full">
         <div className="text-center text-3xl w-full py-5 px-1">
-          <p className="mb-0">Please Open Barrier</p>
+          {/* <p className="mb-0">Pleas</p> */}
           <p className="mb-2">
             <Typography.Text type="secondary">
               <small>click &lsquo;OK&rsquo; for next transaction</small>

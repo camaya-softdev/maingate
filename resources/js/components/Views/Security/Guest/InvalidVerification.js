@@ -3,12 +3,15 @@ import { Row, Col, Typography, Button, Input, Form } from 'antd';
 import { scanHoldingArea } from '../../../../services/api';
 import { barrierAtom, scanDataAtom } from '../../../../atoms';
 import { useAtomValue, useUpdateAtom } from 'jotai/utils';
+// import { useHistory } from 'react-router-dom';
 
 const InvalidVerification = () => {
   const scanHoldingAreaAPI = scanHoldingArea();
+  // const scanClearScreen = clearScreen();
   const [form] = Form.useForm();
   const scanData = useAtomValue(scanDataAtom);
   const setBarrier = useUpdateAtom(barrierAtom);
+  // const navigate = useHistory();
 
   const onFinish = (values) => {
     setBarrier(true);
@@ -29,6 +32,10 @@ const InvalidVerification = () => {
     );
   };
 
+  // function backToScanner(){
+  //   setBarrier(true);
+  //   scanClearScreen.mutate();
+  // }
   return (
     <>
       <Row justify="space-around" align="middle" className="h-screen">
@@ -68,6 +75,14 @@ const InvalidVerification = () => {
                 </table>
 
               </div>
+              {/* <div className="text-center my-5">
+                <Button
+                  onClick={backToScanner}
+                  size="large"
+                  type="primary">
+                  Cancel
+                </Button>
+              </div> */}
 
               <div className="text-center my-5">
                 <Button

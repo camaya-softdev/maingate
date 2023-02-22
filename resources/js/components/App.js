@@ -20,6 +20,7 @@ import useOnHoldCounter from '../hooks/useOnHoldCounter';
 
 const App = () => {
   const userToken = useAtomValue(userTokenAtom);
+
   const setKioskBarrierRedirectTimer = useUpdateAtom(kioskBarrierRedirectTimerAtom);
   const checkKioskDataAPI = getCheckKioskData();
   const getKioskBarrierRedirectTimerAPI = getKioskBarrierRedirectTimer({
@@ -28,6 +29,7 @@ const App = () => {
       onSuccess: (data) => setKioskBarrierRedirectTimer(data.data)
     }
   });
+
 
   useKeyboardEvents();
   useEchoPublicChannel({ channel: 'scan', event: 'ScanEvent' });

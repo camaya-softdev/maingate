@@ -109,6 +109,7 @@ class ScanGateAccess extends Controller
 
             return response()->json([
                 'status' => 'CODE_INVALID',
+
                 'status_message' => 'Code is missing or not recognized',
             ], 400);
         }
@@ -193,12 +194,20 @@ class ScanGateAccess extends Controller
             $scanLogService->write_log([
                 $request->code,
                 'CODE_INVALID',
+                'details' => [
+                    'code' => $request->code,
+                    'tap_id' => $tap->id,
+                ],
                 'Code not accepted. The code is not allowed to be used here or does not exist in our records.',
                 Carbon::now()
             ]);
 
             return response()->json([
                 'status' => 'CODE_INVALID',
+                'details' => [
+                    'code' => $request->code,
+                    'tap_id' => $tap->id,
+                ],
                 'status_message' => 'Code not accepted. The code is not allowed to be used here or does not exist in our records.',
             ], 400);
         }
@@ -240,6 +249,10 @@ class ScanGateAccess extends Controller
 
             return response()->json([
                 'status' => 'CODE_VALID_WITH_ERROR',
+                'details' => [
+                    'code' => $request->code,
+                    'tap_id' => $tap->id,
+                ],
                 'status_message' => 'Code not accepted. Booking is not CONFIRMED.',
             ], 400);
         }
@@ -284,6 +297,10 @@ class ScanGateAccess extends Controller
 
             return response()->json([
                 'status' => 'CODE_CONSUMED',
+                'details' => [
+                    'code' => $request->code,
+                    'tap_id' => $tap->id,
+                ],
                 'status_message' => 'This code is already been used or consumed completely.',
             ], 400);
         }
@@ -419,6 +436,10 @@ class ScanGateAccess extends Controller
 
                     return response()->json([
                         'status' => 'CODE_NOT_ALLOWED',
+                        'details' => [
+                            'code' => $request->code,
+                            'tap_id' => $tap->id,
+                        ],
                         'status_message' => 'Please use your Guest Reference # for Main Gate',
                     ], 400);
                 }
@@ -513,6 +534,10 @@ class ScanGateAccess extends Controller
 
             return response()->json([
                 'status' => 'CODE_INVALID',
+                'details' => [
+                    'code' => $request->code,
+                    'tap_id' => $tap->id,
+                ],
                 'status_message' => 'There\'s no record corresponding to QR Code.',
             ], 400);
         }
@@ -635,7 +660,7 @@ class ScanGateAccess extends Controller
 
         // Update kiosk display
         return response()->json([
-            'status' => 'OK',
+            // 'status' => 'OK',
             'users' => '',
             'layout' => 'tablet',
             'booking' => $booking_kiosk,
@@ -657,7 +682,7 @@ class ScanGateAccess extends Controller
         // Cache::put('kiosk_data', $request->all());
 
         return response()->json([
-            'status' => 'OK',
+            // 'status' => 'OK',
             'status_message' => "Scan successful!",
             // 'data' => [
             //     'booking' => Booking::where('reference_number', $pass['booking_reference_number'])->with(['guests', 'guest_vehicles', 'inclusions', 'customer'])->first(),
