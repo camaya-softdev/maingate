@@ -60,7 +60,7 @@ class GuestsReportDownloads implements FromView
             'Commercial - Golf',
             'Commercial - Promo',
             'Commercial - walk - in',
-            'Commercial - (Website)',
+            'Commercial (Website)',
             'Corporate FIT',
             'Corporate Sales',
             'DTT - Walk in',
@@ -68,6 +68,7 @@ class GuestsReportDownloads implements FromView
         ];
         $realEstatetags = [
             'ESLCC - Employee',
+            'ESLCC - GC',
             'ESLCC - Sales Agent',
             'ESLCC - Sales Client',
             'RE - Golf',
