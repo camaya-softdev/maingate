@@ -37,12 +37,12 @@ const Index = () => {
   }, [selectDateString]);
 
   function dowloadExcel(){
-
+    setLoading(true);
     const dlResponse = axios.get('/download-guest-reports',{
       responseType:'blob'
     })
       .then(response=>{
-        setLoading(true);
+
         let fileUrl = window.URL.createObjectURL(response.data);
         let fileLink = document.createElement('a');
 
@@ -54,6 +54,7 @@ const Index = () => {
         setLoading(false);
       }).catch(error=>{
         console.log(error.response.data);
+        setLoading(false);
       });
 
     return dlResponse;
@@ -91,6 +92,7 @@ const Index = () => {
           <Typography.Paragraph type="secondary">
             Guest Reports  <Button type="primary"
               loading={loading}
+              disabled={loading}
               onClick={dowloadExcel}
               shape="round" size='small'>
               {loading ? 'Downloading Reports' : 'Download Reports'}
