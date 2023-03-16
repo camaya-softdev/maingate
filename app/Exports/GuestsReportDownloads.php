@@ -51,7 +51,10 @@ class GuestsReportDownloads implements FromView
             'Orion Sky',
             'Orion Sky - Guest',
             'SLA - Events/Guests',
-            'VIP Guest'
+            'VIP Guest',
+            'ESLCC - GC',
+            'ESTLC - Event/Guest',
+
         ];
         $commercialTags = [
             'Commercial',
@@ -68,11 +71,11 @@ class GuestsReportDownloads implements FromView
         ];
         $realEstatetags = [
             'ESLCC - Employee',
-            'ESLCC - GC',
+            'SDMB - Sales Director Marketing Budget',
             'ESLCC - Sales Agent',
             'ESLCC - Sales Client',
             'ESTVC - Employee',
-            'ESTLC - Event/Guest',
+
             'RE - Golf',
             'SDMB - Sales Director Marketing Budget',
             'Thru Agent - Paying',
