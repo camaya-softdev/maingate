@@ -60,7 +60,7 @@ class GuestsReportDownloads implements FromView
             'Commercial - Golf',
             'Commercial - Promo',
             'Commercial - walk - in',
-            'Commercial - Website',
+            'Commercial - (Website)',
             'Corporate FIT',
             'Corporate Sales',
             'DTT - Walk in',
