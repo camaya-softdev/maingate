@@ -71,6 +71,8 @@ class GuestsReportDownloads implements FromView
             'ESLCC - GC',
             'ESLCC - Sales Agent',
             'ESLCC - Sales Client',
+            'ESTVC - Employee',
+            'ESTLC - Event/Guest',
             'RE - Golf',
             'SDMB - Sales Director Marketing Budget',
             'Thru Agent - Paying',
