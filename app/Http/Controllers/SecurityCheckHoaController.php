@@ -70,6 +70,7 @@ class SecurityCheckHoaController extends Controller
                 Cache::forget('kiosk_data');
             }
 
+
             HoaTransaction::create([
                 'status' => $securityCheck->status,
                 'code' => $securityCheck->code,

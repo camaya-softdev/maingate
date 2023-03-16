@@ -55,23 +55,23 @@ class CloudManualSync
 
     public function fetch_table_data()
     {
-
+        $perMonth = Carbon::now()->format('F');
         $filter_for_inserts_updates = [
             'bookings' => [
-                'id' => Booking::cursor()->pluck('id'),
-                'updated_at' => Booking::cursor()->pluck('updated_at'),
+                'id' => Booking::whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Booking::whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
             ],
             'booking_tags' => [
-                'id' => BookingTag::withTrashed()->cursor()->pluck('id')->chunk(100),
-                'updated_at' => BookingTag::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => BookingTag::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id')->chunk(100),
+                'updated_at' => BookingTag::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
             ],
             'customers' => [
-                'id' => Customer::withTrashed()->latest()->cursor()->pluck('id'),
-                'updated_at' => Customer::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => Customer::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Customer::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
             ],
             'guests' => [
-                'id' => Guest::withTrashed()->cursor()->pluck('id'),
-                'updated_at' => Guest::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => Guest::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Guest::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
                 'update_data' => GuestUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {
@@ -79,8 +79,8 @@ class CloudManualSync
                     }),
             ],
             'guest_vehicles' => [
-                'id' => GuestVehicle::withTrashed()->cursor()->pluck('id'),
-                'updated_at' => GuestVehicle::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => GuestVehicle::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => GuestVehicle::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
                 'update_data' => GuestVehicleUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {
@@ -93,16 +93,16 @@ class CloudManualSync
                     }),
             ],
             'inclusions' => [
-                'id' => Inclusion::withTrashed()->cursor()->pluck('id'),
-                'updated_at' => Inclusion::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => Inclusion::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Inclusion::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
             ],
             'invoices' => [
-                'id' => Invoice::withTrashed()->cursor()->pluck('id'),
-                'updated_at' => Invoice::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => Invoice::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Invoice::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
             ],
             'passes' => [
-                'id' => Pass::withTrashed()->latest()->cursor()->pluck('id'),
-                'updated_at' => Pass::withTrashed()->cursor()->pluck('updated_at'),
+                'id' => Pass::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Pass::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
                 'update_data' => PassUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {

@@ -31,8 +31,8 @@ class SecurityDashboardController extends Controller
             ->whereDate($date_column, $filter_operator, $filter_date)
             ->join('bookings', 'reference_number', '=', 'booking_reference_number')
             ->where(function ($query) {
-                $query->where('bookings.status', 'confirmed')
-                    ->orWhere('bookings.status', 'pending');
+                $query->where('bookings.status', 'confirmed');
+                // ->orWhere('bookings.status', 'pending');
             })
 
             ->get()

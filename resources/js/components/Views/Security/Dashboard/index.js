@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 // import { DatePickerProps } from 'antd';
-import { Divider, Typography, DatePicker } from "antd";
-import { LoadingOutlined } from '@ant-design/icons';
+import { Divider, Typography, DatePicker,Button } from "antd";
+import { LoadingOutlined,PrinterOutlined } from '@ant-design/icons';
 import GuestsTable from "./GuestsTable";
 import { getGuests, getSecurityDashboard } from "../../../../services/api";
 import SummaryStatistics from "./SummaryStatistics";
 import date from "../../../../services/date";
 import dayjs from "dayjs";
-
+import axios from "axios";
 const Index = () => {
 
 
@@ -16,6 +16,7 @@ const Index = () => {
   const [dateTime, setDateTime] = useState(currentDateTime());
   const getSecurityDashboardAPI = getSecurityDashboard({ date:selectDateString });
   const todaysGuests = getGuests({ date:selectDateString });
+  const [loading,setLoading] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -35,6 +36,26 @@ const Index = () => {
     return () => {};
   }, [selectDateString]);
 
+  function dowloadExcel(){
+    setLoading(true);
+    const dlResponse = axios.get('/download-guest-reports',{
+      responseType:'blob'
+    })
+      .then(response=>{
+        let fileUrl = window.URL.createObjectURL(response.data);
+        let fileLink = document.createElement('a');
+
+        fileLink.href = fileUrl;
+        fileLink.setAttribute('download','guest_reports.xlsx');
+        document.body.appendChild(fileLink);
+
+        fileLink.click();
+      }).catch(error=>{
+        console.log(error.response.data);
+      });
+    setLoading(false);
+    return dlResponse;
+  }
   return (
     <div className="flex justify-center h-auto min-h-full w-full p-5">
       <div className="bg-white w-full">
@@ -62,7 +83,20 @@ const Index = () => {
           <SummaryStatistics data={getSecurityDashboardAPI.data?.data} />
         }
 
-        <Divider orientation="left">Guest Lists</Divider>
+        <Divider orientation="left">Guest Lists
+        </Divider>
+        <div className="xl:px-16 lg:px-12 md:px-10 sm:px-8 p-5">
+          <Typography.Paragraph type="secondary">
+            Guest Reports  <Button type="primary"
+              loading={loading}
+              onClick={dowloadExcel}
+              shape="round" icon={<PrinterOutlined />} size='small'>
+              {loading ? 'Downloading Reports' : 'Download Rerpots'}
+            </Button>
+          </Typography.Paragraph>
+        </div>
+
+
         <GuestsTable query={todaysGuests} />
 
         <Divider orientation="left">Data Sync</Divider>

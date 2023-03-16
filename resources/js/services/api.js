@@ -59,7 +59,10 @@ export const kioskDefaultPageWithTimer = (url = "/ws-with-timer") =>
 export const kioskReloadPage = (url = "/ws/reload") =>
   useMutation(() => get(url));
 export const syncTable = (url = "/sync-table") => useMutation(() => get(url));
+
 export const syncHoaTables = (url = "/hoa-sync-table") =>
+  useMutation(() => get(url));
+export const downloadGuestReports = (url = "/download-guest-reports") =>
   useMutation(() => get(url));
 export const getGuests = ({
   date,

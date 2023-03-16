@@ -1,6 +1,7 @@
 <?php
 
 use App\Events\ScanEvent;
+use App\Http\Controllers\GuestReportsController;
 use Illuminate\Support\Facades\Route;
 use App\Services\CloudService;
 use App\Services\CloudHoaService;
@@ -39,6 +40,8 @@ Route::get('/sync-table', function (CloudManualSync $cloudService) {
     $return = $cloudService->sync_table();
     return $return;
 });
+
+Route::get('/download-guest-reports', GuestReportsController::class);
 
 Route::get('/hoa-sync-table', function (CloudHoaService $cloudHoaService) {
     $return = $cloudHoaService->sync_table();

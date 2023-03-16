@@ -6,7 +6,7 @@ import {
   kioskDefaultPage,
   kioskReloadPage,
   putKioskBarrierRedirectTimer,
-  syncTable } from "../../../../services/api";
+  syncTable,syncHoaTables } from "../../../../services/api";
 import { useUpdateAtom } from 'jotai/utils';
 import { kioskBarrierRedirectTimerAtom, userTokenAtom } from '../../../../atoms';
 import Table from './CustomChecklist/Table';
@@ -14,6 +14,7 @@ import Table from './CustomChecklist/Table';
 const Dashboard = () => {
   const [form] = Form.useForm();
   const syncTableAPI = syncTable();
+  const syncHoaTablesAPI = syncHoaTables();
   const kioskDefaultPageAPI = kioskDefaultPage();
   const kioskReloadPageAPI = kioskReloadPage();
   const getLogoutAPI = getLogout();
@@ -66,7 +67,17 @@ const Dashboard = () => {
             size="large"
             onClick={() => syncTableAPI.mutate()}
           >
-            {syncTableAPI.isLoading ? 'Syncing Table' : 'Sync Table'}
+            {syncTableAPI.isLoading ? 'CWS Syncing Table' : 'CWS Sync Table'}
+          </Button>
+        </div>
+
+        <div className="xl:px-16 lg:px-12 md:px-10 sm:px-8 p-5">
+          <Button
+            loading={syncHoaTablesAPI.isLoading}
+            size="large"
+            onClick={() => syncHoaTablesAPI.mutate()}
+          >
+            {syncTableAPI.isLoading ? 'HOA Syncing Table' : 'HOA Sync Table'}
           </Button>
         </div>
 
