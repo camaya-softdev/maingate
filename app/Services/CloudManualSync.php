@@ -55,6 +55,7 @@ class CloudManualSync
 
     public function fetch_table_data()
     {
+<<<<<<< HEAD
         $perDay = Carbon::now()->format('d');
         $filter_for_inserts_updates = [
             'bookings' => [
@@ -72,6 +73,25 @@ class CloudManualSync
             'guests' => [
                 'id' => Guest::withTrashed()->cursor()->pluck('id'),
                 'updated_at' => Guest::withTrashed()->cursor()->pluck('updated_at'),
+=======
+        $perMonth = Carbon::now()->format('F');
+        $filter_for_inserts_updates = [
+            'bookings' => [
+                'id' => Booking::whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Booking::whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
+            ],
+            'booking_tags' => [
+                'id' => BookingTag::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id')->chunk(100),
+                'updated_at' => BookingTag::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
+            ],
+            'customers' => [
+                'id' => Customer::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Customer::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
+            ],
+            'guests' => [
+                'id' => Guest::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Guest::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
+>>>>>>> 7f31849f5b9fc7eadea245ab2dc4cf9632a4254e
                 'update_data' => GuestUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {
@@ -79,8 +99,13 @@ class CloudManualSync
                     }),
             ],
             'guest_vehicles' => [
+<<<<<<< HEAD
                 'id' => GuestVehicle::withTrashed()->cursor()->pluck('id'),
                 'updated_at' => GuestVehicle::withTrashed()->cursor()->pluck('updated_at'),
+=======
+                'id' => GuestVehicle::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => GuestVehicle::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
+>>>>>>> 7f31849f5b9fc7eadea245ab2dc4cf9632a4254e
                 'update_data' => GuestVehicleUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {
@@ -93,6 +118,7 @@ class CloudManualSync
                     }),
             ],
             'inclusions' => [
+<<<<<<< HEAD
                 'id' => Inclusion::withTrashed()->cursor()->pluck('id'),
                 'updated_at' => Inclusion::withTrashed()->cursor()->pluck('updated_at'),
             ],
@@ -103,6 +129,18 @@ class CloudManualSync
             'passes' => [
                 'id' => Pass::withTrashed()->latest()->cursor()->pluck('id'),
                 'updated_at' => Pass::withTrashed()->cursor()->pluck('updated_at'),
+=======
+                'id' => Inclusion::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Inclusion::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
+            ],
+            'invoices' => [
+                'id' => Invoice::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Invoice::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
+            ],
+            'passes' => [
+                'id' => Pass::withTrashed()->whereMonth('created_at', $perMonth)->cursor()->pluck('id'),
+                'updated_at' => Pass::withTrashed()->whereMonth('updated_at', $perMonth)->cursor()->pluck('updated_at'),
+>>>>>>> 7f31849f5b9fc7eadea245ab2dc4cf9632a4254e
                 'update_data' => PassUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {
@@ -119,14 +157,22 @@ class CloudManualSync
         ];
 
         $login_token = $this->login_token();
+<<<<<<< HEAD
         // dd($login_token);
+=======
+
+>>>>>>> 7f31849f5b9fc7eadea245ab2dc4cf9632a4254e
         $query_url = config('app.cloud_sync.url') . '/api/auto-gate/gate-sync';
         $response = Http::withToken($login_token)->post($query_url, [
             'filter_for_inserts_updates' => json_encode($filter_for_inserts_updates),
         ]);
 
 
+<<<<<<< HEAD
         // dd($response);
+=======
+
+>>>>>>> 7f31849f5b9fc7eadea245ab2dc4cf9632a4254e
         if ($response->ok()) {
             return $response->json();
         } else {
