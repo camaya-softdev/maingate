@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import { DatePickerProps } from 'antd';
 import { Divider, Typography, DatePicker,Button } from "antd";
-import { LoadingOutlined,PrinterOutlined } from '@ant-design/icons';
+import { LoadingOutlined } from '@ant-design/icons';
 import GuestsTable from "./GuestsTable";
 import { getGuests, getSecurityDashboard } from "../../../../services/api";
 import SummaryStatistics from "./SummaryStatistics";
@@ -37,11 +37,12 @@ const Index = () => {
   }, [selectDateString]);
 
   function dowloadExcel(){
-    setLoading(true);
+
     const dlResponse = axios.get('/download-guest-reports',{
       responseType:'blob'
     })
       .then(response=>{
+        setLoading(true);
         let fileUrl = window.URL.createObjectURL(response.data);
         let fileLink = document.createElement('a');
 
@@ -50,10 +51,11 @@ const Index = () => {
         document.body.appendChild(fileLink);
 
         fileLink.click();
+        setLoading(false);
       }).catch(error=>{
         console.log(error.response.data);
       });
-    setLoading(false);
+
     return dlResponse;
   }
   return (
@@ -90,8 +92,8 @@ const Index = () => {
             Guest Reports  <Button type="primary"
               loading={loading}
               onClick={dowloadExcel}
-              shape="round" icon={<PrinterOutlined />} size='small'>
-              {loading ? 'Downloading Reports' : 'Download Rerpots'}
+              shape="round" size='small'>
+              {loading ? 'Downloading Reports' : 'Download Reports'}
             </Button>
           </Typography.Paragraph>
         </div>
