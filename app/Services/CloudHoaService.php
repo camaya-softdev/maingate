@@ -21,7 +21,7 @@ class CloudHoaService
 {
     public function login()
     {
-        $response = Http::post('https://apidevhoaportal.camayacoast.com/api/login/', [
+        $response = Http::post('https://apihoaportal.camayacoast.com/api/login/', [
             'email' => 'admin@camayacoast.com',
             'password' => 'secretCamaya',
         ]);
