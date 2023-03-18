@@ -91,7 +91,7 @@ const GuestsTable = ({ query }) => {
     {
       title: "Guest Status",
       render: (text, record) =>
-        isEmpty(record.guests.status) ? "" : startCase(record.guests.status),
+        isEmpty(record?.guests?.status) ? "" : startCase(record?.guests?.status),
       filters: [
         {
           text: "Arriving",
@@ -178,8 +178,8 @@ const GuestsTable = ({ query }) => {
 
   useEffect(() => {
     const selectedReferenceNumbers = map(
-      filter(query.data?.data, data => data?.guests?.status !== "arriving"),
-      data => data.guests?.reference_number
+      filter(query?.data?.data, data => data?.guests?.status !== "arriving"),
+      data => data?.guests?.reference_number
     );
 
     setSelectedRowKeys(selectedReferenceNumbers);
