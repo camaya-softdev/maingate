@@ -86,7 +86,7 @@ const GuestsTable = ({ query }) => {
     {
       title: "Primary Customer",
       dataIndex: "booking",
-      render: booking => isEmpty(booking) ? "" : name(booking.customer[0])
+      render: booking => isEmpty(booking) ? "" : name(booking?.customer[0])
     },
     {
       title: "Guest Status",
