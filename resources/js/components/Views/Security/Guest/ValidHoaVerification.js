@@ -17,7 +17,7 @@ const ValidHoaVerification = () => {
   const scanValidAPI = scanHoaValid();
 
   const onSubmit = (values,status = "validated") => {
-    console.log(values);
+
     let arg = {
       status: status,
       code: scanDataHoa.users.card[0].hoa_rfid_num,
