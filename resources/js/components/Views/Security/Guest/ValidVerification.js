@@ -87,7 +87,7 @@ const Verification = () => {
 
     return bookingGuestVehicles;
   };
-  console.log(scanData.tap_id);
+
   const onSubmit = (status = 'validated') => {
     let arg = {
       action_taken: isEmpty(actionTaken)
