@@ -88,7 +88,7 @@ class CloudHoaService
         // dd($filter_for_inserts_updates);
         $login_token = $this->login_token();
 
-        $query_url = 'https://apidevhoaportal.camayacoast.com/api/autogate/hoa-gate-sync/';
+        $query_url = 'https://apihoaportal.camayacoast.com/api/autogate/hoa-gate-sync/';
         $response = Http::withToken($login_token)->post($query_url, [
             'filter_for_inserts_updates' => json_encode($filter_for_inserts_updates),
         ]);
