@@ -43,7 +43,7 @@ class GuestsReportDownloads implements FromView
             'ESTLC - Guest',
             'ESTVC - GC',
             'ESTVC - Guest',
-            'ESTVC-Events/Guests',
+            'ESTVC - Events/Guests',
             'Golf Member',
             'House Use',
             'Magic Leaf - Events/Guests',
@@ -75,7 +75,6 @@ class GuestsReportDownloads implements FromView
             'ESLCC - Sales Agent',
             'ESLCC - Sales Client',
             'ESTVC - Employee',
-
             'RE - Golf',
             'SDMB - Sales Director Marketing Budget',
             'Thru Agent - Paying',
