@@ -21,8 +21,8 @@ class GuestsReportDownloads implements FromView
     public function view(): View
     {
         $otherTags = [
-            'ESLCC-AFV',
-            'ESLCC-CSV',
+            'ESLCC - AFV',
+            'ESLCC - CSV',
             'Cvoucher',
             '1Bataan ITS - Employee',
             'DEV1- Employee',
@@ -36,12 +36,12 @@ class GuestsReportDownloads implements FromView
             'DS18 - Employee',
             'DS18-Events/Guests',
             'DEV1-Events/Guests',
-            'ESLCC-GC',
-            'ESLCC-Guest',
-            'ESLCC-Events/Guests',
-            'ESLCC-FOC',
+            'ESLCC - GC',
+            'ESLCC - Guest',
+            'ESLCC - Events/Guests',
+            'ESLCC - FOC',
             'ESTLC - Guest',
-            'ESTVC-GC',
+            'ESTVC - GC',
             'ESTVC - Guest',
             'ESTVC-Events/Guests',
             'Golf Member',
