@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class CloudService
 {
@@ -147,22 +148,23 @@ class CloudService
         DB::transaction(function () use ($response) {
             $create_data = function ($key, $model) use ($response) {
                 $collection = collect($response['data'][$key]);
+                $columns = Schema::connection('mysql')->getColumnListing($key);
 
-                $collection->map(function ($item) use ($model) {
-
+                $collection->map(function ($item) use ($model, $columns) {
                     $collection = collect($item);
+                    $data = collect($item)->only($columns);
+
                     if (method_exists($model, 'trashed')) {
                         $model::withTrashed()->upsert(
-                            $collection->all(),
+                            $data->all(),
                             $collection->only(['id'])->all(),
-                            $collection->except(['id'])->all(),
+                            $data->except(['id'])->all(),
                         );
                     } else {
                         $model::upsert(
-                            $collection->all(),
+                            $data->all(),
                             $collection->only(['id'])->all(),
-                            $collection->except(['id'])->all(),
-
+                            $data->except(['id'])->all(),
                         );
                     }
 
