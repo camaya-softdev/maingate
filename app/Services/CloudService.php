@@ -14,13 +14,13 @@ use App\Models\Inclusion;
 use App\Models\Invoice;
 use App\Models\Pass;
 use App\Models\PassUpdate;
-use Illuminate\Support\LazyCollection;
 use App\Models\Tap;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class CloudService
 {
@@ -55,23 +55,23 @@ class CloudService
 
     public function fetch_table_data()
     {
-
+        $perMonth = now()->month;
         $filter_for_inserts_updates = [
             'bookings' => [
-                'id' => Booking::cursor()->max('id'),
-                'updated_at' => Booking::cursor()->max('updated_at'),
+                'id' => Booking::whereMonth('created_at', $perMonth)->pluck('id'),
+                'updated_at' => Booking::whereMonth('updated_at', $perMonth)->pluck('updated_at'),
             ],
             'booking_tags' => [
-                'id' => BookingTag::withTrashed()->cursor()->max('id'),
-                'updated_at' => BookingTag::withTrashed()->cursor()->max('updated_at'),
+                'id' => BookingTag::withTrashed()->whereMonth('created_at', $perMonth)->pluck('id')->chunk(100),
+                'updated_at' => BookingTag::withTrashed()->whereMonth('updated_at', $perMonth)->pluck('updated_at'),
             ],
             'customers' => [
-                'id' => Customer::withTrashed()->latest()->cursor()->max('id'),
-                'updated_at' => Customer::withTrashed()->cursor()->max('updated_at'),
+                'id' => Customer::withTrashed()->whereMonth('created_at', $perMonth)->pluck('id'),
+                'updated_at' => Customer::withTrashed()->whereMonth('updated_at', $perMonth)->pluck('updated_at'),
             ],
             'guests' => [
-                'id' => Guest::withTrashed()->cursor()->max('id'),
-                'updated_at' => Guest::withTrashed()->cursor()->max('updated_at'),
+                'id' => Guest::withTrashed()->whereMonth('created_at', $perMonth)->pluck('id'),
+                'updated_at' => Guest::withTrashed()->whereMonth('updated_at', $perMonth)->pluck('updated_at'),
                 'update_data' => GuestUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {
@@ -79,8 +79,8 @@ class CloudService
                     }),
             ],
             'guest_vehicles' => [
-                'id' => GuestVehicle::withTrashed()->cursor()->max('id'),
-                'updated_at' => GuestVehicle::withTrashed()->cursor()->max('updated_at'),
+                'id' => GuestVehicle::withTrashed()->whereMonth('created_at', $perMonth)->pluck('id'),
+                'updated_at' => GuestVehicle::withTrashed()->whereMonth('updated_at', $perMonth)->pluck('updated_at'),
                 'update_data' => GuestVehicleUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {
@@ -93,16 +93,16 @@ class CloudService
                     }),
             ],
             'inclusions' => [
-                'id' => Inclusion::withTrashed()->cursor()->max('id'),
-                'updated_at' => Inclusion::withTrashed()->cursor()->max('updated_at'),
+                'id' => Inclusion::withTrashed()->whereMonth('created_at', $perMonth)->pluck('id'),
+                'updated_at' => Inclusion::withTrashed()->whereMonth('updated_at', $perMonth)->pluck('updated_at'),
             ],
             'invoices' => [
-                'id' => Invoice::withTrashed()->cursor()->max('id'),
-                'updated_at' => Invoice::withTrashed()->cursor()->max('updated_at'),
+                'id' => Invoice::withTrashed()->whereMonth('created_at', $perMonth)->pluck('id'),
+                'updated_at' => Invoice::withTrashed()->whereMonth('updated_at', $perMonth)->pluck('updated_at'),
             ],
             'passes' => [
-                'id' => Pass::withTrashed()->latest()->cursor()->max('id'),
-                'updated_at' => Pass::withTrashed()->cursor()->max('updated_at'),
+                'id' => Pass::withTrashed()->whereMonth('created_at', $perMonth)->pluck('id'),
+                'updated_at' => Pass::withTrashed()->whereMonth('updated_at', $perMonth)->pluck('updated_at'),
                 'update_data' => PassUpdate::where('sync_id', 0)
                     ->get()
                     ->map(function ($item) {
@@ -118,13 +118,19 @@ class CloudService
             ]
         ];
 
-        $login_token = $this->login_token();
+        try {
+            $login_token = $this->login_token();
+        } catch (\Throwable $error) {
+            return response()->json([
+                'message' => 'Unauthenticated.',
+                'error' => $error->getMessage()
+            ], 401);
+        }
 
         $query_url = config('app.cloud_sync.url') . '/api/auto-gate/gate-sync';
         $response = Http::withToken($login_token)->post($query_url, [
             'filter_for_inserts_updates' => json_encode($filter_for_inserts_updates),
         ]);
-
 
 
         if ($response->ok()) {
@@ -146,37 +152,36 @@ class CloudService
 
         DB::transaction(function () use ($response) {
             $create_data = function ($key, $model) use ($response) {
-                $collection = collect($response['data'][$key]);
+                if (isset($response['data'][$key])) {
+                    $columns = Schema::connection('mysql')->getColumnListing($key);
 
-                $collection->map(function ($item) use ($model) {
+                    $rows = collect($response['data'][$key])
+                        ->map(fn($item) => collect($item)->only($columns)->all())
+                        ->all();
 
-                    $collection = collect($item);
-                    if (method_exists($model, 'trashed')) {
-                        $model::withTrashed()->upsert(
-                            $collection->all(),
-                            $collection->only(['id'])->all(),
-                            $collection->except(['id'])->all(),
-                        );
-                    } else {
-                        $model::upsert(
-                            $collection->all(),
-                            $collection->only(['id'])->all(),
-                            $collection->except(['id'])->all(),
+                    $updateColumns = array_diff($columns, ['id']);
 
+                    foreach (array_chunk($rows, 100) as $chunk) {
+                        $query = method_exists($model, 'trashed')
+                            ? $model::withTrashed()
+                            : $model::query();
+
+                        $query->upsert(
+                            $chunk,
+                            ['id'],
+                            $updateColumns
                         );
                     }
-
-                    return $item;
-                })->chunk(100);
+                }
             };
             $update_data = function ($key, $model) use ($response) {
-                $collection = LazyCollection::times($response['data'][$key]);
-
-                $collection->map(function ($item) use ($model) {
-                    $model::find($item['local_id'])
-                        ->update(['sync_id' => $item['cloud_id']]);
-
-                    return $item;
+                collect($response['data'][$key])->each(function ($item) use ($model) {
+                    $record = $model::find($item['local_id']);
+                    if ($record) {
+                        $record->update([
+                            'sync_id' => $item['cloud_id']
+                        ]);
+                    }
                 });
             };
 
@@ -202,7 +207,14 @@ class CloudService
 
     public function update_guest_status($guest_id, $status)
     {
-        $login_token = $this->login_token();
+        try {
+            $login_token = $this->login_token();
+        } catch (\Throwable $error) {
+            return response()->json([
+                'message' => 'Unauthenticated.',
+                'error' => $error->getMessage()
+            ], 401);
+        }
         $query_url = config('app.cloud_sync.url') . '/api/booking/guest/update/status';
         $response = Http::withToken($login_token)->put($query_url, [
             'guest_id' => $guest_id,
@@ -211,8 +223,15 @@ class CloudService
 
         if ($response->ok()) {
             $data = $response->json();
-            GuestUpdate::find($data['id'])->update(['sync_id' => $data['id']]);
-            DB::table('guests')->where('id', $data['id'])->update(['status' => $data['status']]);
+            DB::transaction(function () use ($data) {
+                GuestUpdate::find($data['id'])->update([
+                    'sync_id' => $data['id']
+                ]);
+                DB::table('guests')->where('id', $data['id'])
+                    ->update([
+                        'status' => $data['status']
+                    ]);
+            });
             return true;
         } else {
             Log::error('Cloud sync error in update_guest_status: ' . json_encode($response->body()));
